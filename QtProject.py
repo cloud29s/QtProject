@@ -211,10 +211,10 @@ class PasswordManager(QDialog):
     def create_table(self):
         dialog = CreateTable(self.dict)
         if dialog.exec() == QDialog.DialogCode.Accepted:
-            db_name = dialog.get_db_name()
-            if db_name:
+            self.db_path = dialog.get_db_name()
+            if self.db_path:
                 try:
-                    conn = sqlite3.connect(db_name)
+                    conn = sqlite3.connect(self.db_path)
                     cursor = conn.cursor()
                     cursor.execute('''
                         CREATE TABLE IF NOT EXISTS passwords (
@@ -225,12 +225,14 @@ class PasswordManager(QDialog):
                         )
                     ''')
                     conn.commit()
-                    print(f'{self.dict[19]} {db_name} {self.dict[20]}')
+                    print(f'{self.dict[19]} {self.db_path} {self.dict[20]}')
                 except sqlite3.Error as e:
                     print(f'{self.dict[21]} {e}')
                 finally:
                     if conn:
                         conn.close()
+
+        self.load_data()
 
 
 class AddDialog(QDialog):
